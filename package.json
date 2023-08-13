@@ -1,0 +1,92 @@
+{
+  "_from": "git+https://github.com/shalinisinghraman/createngtest.git",
+  "_id": "@navex/createngtest@1.0.0",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/@navex/createngtest",
+  "_phantomChildren": {},
+  "type": "module",
+  "_requested": {
+    "type": "git",
+    "raw": "https://github.com/shalinisinghraman/createngtest.git",
+    "rawSpec": "https://github.com/shalinisinghraman/createngtest.git",
+    "saveSpec": "git+https://github.com/shalinisinghraman/createngtest.git",
+    "fetchSpec": "https://github.com/shalinisinghraman/createngtest.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "git+https://github.com/shalinisinghraman/createngtest.git#72b4858a8bef1ee886e0407d1fd5c4be47fc6afc",
+  "_spec": "https://github.com/shalinisinghraman/createngtest.git",
+  "_where": "C:\\Users\\shalinisingh.raman\\Downloads\\Angular-8-CRUD-master\\Angular-8-CRUD-master",
+  "author": {
+    "name": "Shalini Raman"
+  },
+  "bin": {
+    "gentest": "index.js",
+    "createngtest": "index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/shalinisinghraman/createngtest/issues"
+  },
+  "bundleDependencies": [],
+  "dependencies": {
+    "acorn": "^8.10.0",
+    "app-root-path": "^3.1.0",
+    "check-engines": "^1.6.0",
+    "ejs": "^3.1.9",
+    "indent.js": "^0.3.5",
+    "js-beautify": "^1.10.2",
+    "myCustomModule": "file:./path/to/myCustomModule",
+    "require-from-string": "^2.0.2",
+    "typescript": "^5.1.6",
+    "yargs": "^17.7.2"
+  },
+  "deprecated": false,
+  "description": "Angular8+ Auto Test Generator",
+  "devDependencies": {
+    "@angular/animations": "^15.2.9",
+    "@angular/common": "^15.2.9",
+    "@angular/core": "^15.2.9",
+    "@angular/forms": "^15.2.9",
+    "@angular/platform-browser": "^15.2.9",
+    "@angular/router": "^15.2.9",
+    "@babel/cli": "^7.22.10",
+    "@babel/core": "^7.22.10",
+    "@babel/preset-env": "^7.22.10",
+    "@ngx-translate/core": "^14.0.0",
+    "require-from-string": "^2.0.2",
+    "chart.js": "^4.3.3",
+    "crypto-js": "^4.1.1",
+    "date-fns": "^2.30.0",
+    "rxjs": "^7.8.1"
+  },
+  "engines": {
+    "node": ">=16.13.0",
+    "npm": ">=9.5.1"
+  },
+  "homepage": "https://github.com/shalinisinghraman/createngtest#readme",
+  "keywords": [
+    "angular",
+    "generate",
+    "unit",
+    "test",
+    "cli"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "@navex/createngtest",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/@navex"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shalinisinghraman/createngtest.git"
+  },
+  "scripts": {
+    "test": "node test.js",
+    "babel": "../node_modules/.bin/babel src -d dist"
+  },
+  "version": "2.0.0"
+}
