@@ -1,26 +1,6 @@
 #!/usr/bin/env node
-//const jsParser = require('acorn').Parser;
-//const fs = require('fs');
-//const path = require('path'); // eslint-disable-line
-//const yargs = require('yargs');
-//const ts = require('typescript');
-//const requireFromString = require('require-from-string');
-//const glob = require('glob');
-//const appRoot = require('app-root-path');
-
-//const config = require('./createngtest.config');
-//const Util = require('./src/util.js');
-//const FuncTestGen = require('./src/func-create-test.js');
-
-//const ComponentTestGen = require('./src/component/component-create-test.js');
-// const DirectiveTestGen = require('./src/directive/directive-create-test.js');
-// const serviceTestGen = require('./src/service/service-create-test.js');
-// const PipeTestGen = require('./src/pipe/pipe-create-test.js');
-// const ClassTestGen = require('./src/class/class-create-test.js');
-// const { generateSpecFile } = require('./call_all')
-
 import * as jsParser from 'acorn';
-import * as fs from 'fs';
+import fs from 'fs';
 import * as path from 'path';
 import yargs from 'yargs';
 import ts from 'typescript';
@@ -31,11 +11,11 @@ import config from './createngtest.config.js';
 import Util from './src/util.js';
 import FuncTestGen from './src/func-create-test.js';
 import ComponentTestGen from './src/component/component-create-test.js';
-import * as DirectiveTestGen from './src/directive/directive-create-test.js';
-import * as serviceTestGen from './src/service/service-create-test.js';
-import * as PipeTestGen from './src/pipe/pipe-create-test.js';
-import * as ClassTestGen from './src/class/class-create-test.js';
-import * as generateSpecFile from './call_all.js';
+import DirectiveTestGen from './src/directive/directive-create-test.js';
+import serviceTestGen from './src/service/service-create-test.js';
+import PipeTestGen from './src/pipe/pipe-create-test.js';
+import ClassTestGen from './src/class/class-create-test.js';
+import generateSpecFile from './call_all.js';
 
 import { createRequire } from "module";
 //const require = createRequire(import.meta.url);
@@ -48,6 +28,7 @@ import { createRequire } from "module";
 
 //import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
+import { exit } from 'process';
 const yarg = yargs(hideBin(process.argv))
 
 
@@ -76,10 +57,8 @@ const argv = yarg.usage('Usage: $0 <tsFile> [options]')
 
 Util.DEBUG = argv.verbose;
 if (argv.a) {
-  console.log('------------=====');
-  console.log(argv);
   generateSpecFile(path.join(process.cwd(), '/src/app/'))
-//  return
+  process.exit(0);
   //return false;
 }
 
@@ -178,20 +157,8 @@ function getFuncTest(Klass, funcName, funcType, angularType) {
     `;
 }
 function doimport (str) {
-  // if (globalThis.URL.createObjectURL) {
-  //   const blob = new Blob([str], { type: 'text/javascript' })
-  //   const url = URL.createObjectURL(blob)
-  //   console.log('==============================');
-  //   console.log(url);
-  //   const module = import(url)
-  //   URL.revokeObjectURL(url) // GC objectURLs
-  //   return module
-  // }
-  console.log(str);
-  console.log("88888888888");
-  //const url = `data:text/javascript;base64,${Buffer.from(str).toString(`base64`)}`;
-  const url = `data:text/javascript;base64,${Buffer.from('export let AppComponent = class AppComponent {}').toString(`base64`)}`;
-  console.log(url);
+  const url = `data:text/javascript;base64,${Buffer.from(str).toString(`base64`)}`;
+  //const url = `data:text/javascript;base64,${Buffer.from('export let AppComponent = class AppComponent {}').toString(`base64`)}`;
   return  import(url)
 }
 
@@ -216,23 +183,32 @@ async function run (tsFile) {
         target: ts.ScriptTarget.ES2020
       }
     });
-//console.log(typeof(result));
+
     // replace invalid require statements
     let replacedOutputText = result.outputText
       .replace(/require\("\.(.*)"\)/gm, '{}') // replace require statement to a variable, {}
       .replace(/super\(.*\);/gm, '') // remove inheritance code
       .replace(/super\./gm, 'this.') // change inheritance call to this call
       .replace(/\s+extends\s\S+ {/gm, ' extends Object {') // rchange inheritance to an Object
+      .replace(/\bimport\b\s+(.*)\s+from[^\n;]*/gm, (match, p1) => {
+        return p1.split(',').map(item => {
+            item = item.replace(/[{}]/g, '').trim();
+            let s = item.search(/\bas\b/g);
+            if (s > -1) {
+                item = item.substring(s+2);
+            }
+            return `var ${item.trim()}=()=>{}`;
+        }).join(';');
+      })
+      .replace(/\bimport\b[^\n;]*/gm, '')
+      .replace(/\bwindow\b/g, 'globalThis')
 
     config.replacements.forEach( ({from,to}) => {
       replacedOutputText = replacedOutputText.replace(new RegExp(from, 'gm'), to);
     })
 
-//console.log(config);
     const modjule = await doimport(replacedOutputText);
 
-console.log(modjule);
-console.log(JSON.stringify(Object.keys(modjule)));
     const Klass = modjule[ejsData.className];
     Util.DEBUG &&
       console.warn('\x1b[36m%s\x1b[0m', `PROCESSING ${Klass.ctor && Klass.ctor.name} constructor`);

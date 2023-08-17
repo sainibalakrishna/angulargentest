@@ -1,13 +1,8 @@
 #!/usr/bin/env node
-// const execSync = require('child_process').execSync;
-// const path = require('path');
-// const assert = require('assert');
-// const fs = require('fs');
-
 import * as execSync from 'child_process';
 import * as path from 'path';
 import * as assert from 'assert';
-import * as fs from 'fs';
+import fs from 'fs';
 
 const srcFiles = [
   path.join('examples', 'example.klass.ts'),
@@ -28,7 +23,6 @@ const srcFiles = [
 ];
 
 srcFiles.forEach(filePath => {
-  console.log("000000000000000000000");
   const output = ('' + execSync.execSync(`./index.js ${filePath} -F`))
     .replace(/\r\n/g, '\n');
   const expected = ('' + fs.readFileSync(filePath.replace('.ts', '.spec.ts')))

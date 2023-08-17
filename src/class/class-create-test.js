@@ -1,12 +1,6 @@
-// const path = require('path');
-// const fs = require('fs');
-
 import * as path from 'path';
-import * as fs from 'fs';
-
-//const CommonTestGen = require('../generic-create-test.js');
-
-import * as CommonTestGen from '../generic-create-test.js';
+import fs from 'fs';
+import CommonTestGen from '../generic-create-test.js';
 
 class ClassTestGen {
   constructor (tsPath, config) {
@@ -50,7 +44,6 @@ class ClassTestGen {
       accessorTests: undefined, //  declarition only, will be set from mockData
       functionTests: undefined, //  declarition only, will be set from mockData
     }
-
     return {ejsData};
   }
 

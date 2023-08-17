@@ -1,7 +1,4 @@
-// const fs = require('fs');
-// const path = require('path');
-
-import * as fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);

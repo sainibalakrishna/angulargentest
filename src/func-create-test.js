@@ -1,8 +1,5 @@
-// const jsParser = require('acorn').Parser;
-// const Util = require('./util.js');
-
 import * as jsParser from 'acorn';
-import * as Util from './util.js';
+import Util from './util.js';
 
 class FuncTestGen {
 

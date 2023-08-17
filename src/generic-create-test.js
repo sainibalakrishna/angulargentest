@@ -1,16 +1,7 @@
-// const path = require('path');
-// const fs = require('fs');
-// const ejs = require('ejs');
-// const ts = require('typescript');
-// const TypescriptParser = require('./typescript-parser');
-
-// const Util = require('./util.js');
-
-
-import * as path from 'path';
-import * as fs from 'fs';
-import * as ejs from 'ejs';
-import * as ts from 'typescript';
+import path from 'path';
+import  fs from 'fs';
+import ejs from 'ejs';
+import ts from 'typescript';
 import TypescriptParser from './typescript-parser.js';
 import Util from './util.js';
 
@@ -29,7 +20,7 @@ function __get(node) {
   if (node.type && node.type.typeName) {
     type = node.type.typeName.escapedText;
   } else if (node.type && node.type.kind) {
-    type = ts.SyntaxKind[node.type.kind].replace(/Keyword/,'').toLowerCase()
+    type = ts.SyntaxKind[node.type.kind]?.replace(/Keyword/,'').toLowerCase()
   } 
 
   let decorator;
@@ -62,7 +53,7 @@ function __getKlassDecorator(klass) {
 // all imports info. from typescript
 // { Component: { moduleName: xxx, alias: xxx } }
 function getImports() {
-  const imports = [];
+  let imports = [];
   // Iterate through Typescript to find imports needed there
   const parsed = new TypescriptParser(this.typescript);
   __toArray(parsed.rootNode.get('ImportDeclaration'))
@@ -81,6 +72,7 @@ function getImports() {
       })
     }
   });
+
 
   // Iterate through HTML associated with Typescript to find imports that are needed in pipes
   // These pipes are assumed to be generated through Angular and will be built in a specific way
@@ -121,7 +113,7 @@ function getImports() {
    }
     htmlProcess = htmlProcess.substring(nextPipe + 1);
     nextPipe = htmlProcess.indexOf("|");
-  } 
+  }
   return imports;
 }
 
@@ -149,7 +141,6 @@ function getKlass() {
   const klass =
     klassDeclarations.find(decl => decl.node.name.escapedText === fileBasedKlassName) ||
     klassDeclarations[0];
-
   if (!klass) {
     throw new Error(`Error:TypeScriptParser Could not find ` +
       `${fileBasedKlassName || 'a class'} from ${this.tsPath}`);
@@ -164,83 +155,113 @@ function getAngularType() {
 
 // import statement mocks;
 function getImportMocks() {
-  const importMocks = [];
-  const klassName = this.klass.node.name.escapedText;
-  const moduleName = path.basename(this.tsPath).replace(/.ts$/, '');
+//   const importMocks = [];
+//   const klassName = this.klass.node.name.escapedText;
+//   const moduleName = path.basename(this.tsPath).replace(/.ts$/, '');
  
-  const imports = {};
-  if (['component', 'directive'].includes(this.angularType)) {
-    imports[`@angular/core`] = ['Component'];
-  }
-  imports[`./${moduleName}`] = [klassName]
+//   const imports = {};
+//   if (['component', 'directive'].includes(this.angularType)) {
+//     imports[`@angular/core`] = ['Component'];
+//   }
+//   imports[`./${moduleName}`] = [klassName]
 
-  if (this.klass.get('Constructor').node) {
-    const paremeters = this.klass.get('Constructor').node.parameters;
-    paremeters.forEach(param => {
-      const {name, type, decorator} = __get(param);
-      const exportName = decorator ? decorator.name : type;
-      const emport = this.imports.find(el => el.name === exportName); // name , alias
+//   if (this.klass.get('Constructor').node) {
+//     const paremeters = this.klass.get('Constructor').node.parameters;
+//     paremeters.forEach(param => {
+//       const {name, type, decorator} = __get(param);
+//       const exportName = decorator ? decorator.name : type;
+//       const emport = this.imports.find(el => el.name === exportName); // name , alias
 
-      const importStr = emport.alias ? `${exportName} as ${emport.alias}` : exportName;
-      if (exportName === 'Inject') { // do not import Inject, but import Inject name
-        const commonTypes = ['APP_BASE_HREF', 'DOCUMENT', 'LOCATION_INITIALIZED', 'Time'];
-        const importLib = commonTypes.includes(decorator.param) ? '@angular/common' : '@angular/core';
-        imports[importLib] = (imports[importLib] || []).concat(decorator.param);
-      } else {
-        if(importStr === 'ToastrService'){
-          imports[emport.moduleName] = (imports[emport.moduleName] || []).concat('ToastrModule');
-        }
-        imports[emport.moduleName] = (imports[emport.moduleName] || []).concat(importStr);
-      }
-    });
-  }
 
-  for (var lib in imports) {
-    const fileNames = imports[lib].join(', ');
-    importMocks.push(`import { ${fileNames} } from '${lib}';`)
-  }
+//       const importStr = emport.alias ? `${exportName} as ${emport.alias}` : exportName;
+//       if (exportName === 'Inject') { // do not import Inject, but import Inject name
+//         const commonTypes = ['APP_BASE_HREF', 'DOCUMENT', 'LOCATION_INITIALIZED', 'Time'];
+//         const importLib = commonTypes.includes(decorator.param) ? '@angular/common' : '@angular/core';
+//         imports[importLib] = (imports[importLib] || []).concat(decorator.param);
+//       } else {
+//         if(importStr === 'ToastrService'){
+//           imports[emport.moduleName] = (imports[emport.moduleName] || []).concat('ToastrModule');
+//         }
+//         imports[emport.moduleName] = (imports[emport.moduleName] || []).concat(importStr);
+//       }
+//     });
+//   }
 
-  // Iterate through HTML associated with Typescript to find imports that are needed in pipes
-  // These pipes are assumed to be generated through Angular and will be built in a specific way
-  let htmlProcess = this.html;
-  let nextPipe = htmlProcess ? htmlProcess.indexOf("|"): -1;
-  while(nextPipe >= 0) {
-    let i = htmlProcess.indexOf("|");
-    if(htmlProcess.charAt(i + 1) === "|") {
+//   for (var lib in imports) {
+//     const fileNames = imports[lib].join(', ');
+//     importMocks.push(`import { ${fileNames} } from '${lib}';`)
+//   }
 
-      // Avoid processing || operator as a pipe
+//   // Iterate through HTML associated with Typescript to find imports that are needed in pipes
+//   // These pipes are assumed to be generated through Angular and will be built in a specific way
+//   let htmlProcess = this.html;
+//   let nextPipe = htmlProcess ? htmlProcess.indexOf("|"): -1;
+//   while(nextPipe >= 0) {
+//     let i = htmlProcess.indexOf("|");
+//     if(htmlProcess.charAt(i + 1) === "|") {
 
-      nextPipe += 2;
+//       // Avoid processing || operator as a pipe
 
-    } else {
-    let newPipe = "";
+//       nextPipe += 2;
 
-    // In case the first character AFTER "|" isn't whitespace, check if there is a character there.
-    if(htmlProcess.charAt(nextPipe + 1).match(/[a-z]/i)) {
-      i++;
-    } else {
-      i+=2;
-    }
+//     } else {
+//     let newPipe = "";
 
-    // Look through HTML until it finds a non-letter.
-    // For example, if the HTML snippet is "... | filter:filterData ...", we want "filter"
-    do {
-      newPipe = newPipe.concat(htmlProcess.charAt(i));
-      i++;
-    } while (htmlProcess.charAt(i).match(/[a-z]/i))
-    let pipeDirectory = 'src/app/pipes/' + newPipe + '.pipe';
-    let pipeName = newPipe[0].toUpperCase() + newPipe.substring(1) + "Pipe";
+//     // In case the first character AFTER "|" isn't whitespace, check if there is a character there.
+//     if(htmlProcess.charAt(nextPipe + 1).match(/[a-z]/i)) {
+//       i++;
+//     } else {
+//       i+=2;
+//     }
 
-    // Prevent adding repeat pipes
-    let containsPipe = importMocks.some(function(el) { return el.indexOf(pipeName) >= 0 })
-    if(!containsPipe) {
-      importMocks.push(`import { ${pipeName} } from '${pipeDirectory}';`);
-    }
-   }
-    htmlProcess = htmlProcess.substring(nextPipe + 1);
-    nextPipe = htmlProcess.indexOf("|");
-  } 
-  return importMocks;
+//     // Look through HTML until it finds a non-letter.
+//     // For example, if the HTML snippet is "... | filter:filterData ...", we want "filter"
+//     do {
+//       newPipe = newPipe.concat(htmlProcess.charAt(i));
+//       i++;
+//     } while (htmlProcess.charAt(i).match(/[a-z]/i))
+//     let pipeDirectory = 'src/app/pipes/' + newPipe + '.pipe';
+//     let pipeName = newPipe[0].toUpperCase() + newPipe.substring(1) + "Pipe";
+
+//     // Prevent adding repeat pipes
+//     let containsPipe = importMocks.some(function(el) { return el.indexOf(pipeName) >= 0 })
+//     if(!containsPipe) {
+//       importMocks.push(`import { ${pipeName} } from '${pipeDirectory}';`);
+//     }
+//    }
+//     htmlProcess = htmlProcess.substring(nextPipe + 1);
+//     nextPipe = htmlProcess.indexOf("|");
+//   } 
+
+
+//   return importMocks;
+
+let imports = [];
+
+  const parsed = new TypescriptParser(this.typescript);
+  __toArray(parsed.rootNode.get('ImportDeclaration'))
+    .map(prop => {
+    //   console.log(prop);
+    // const moduleName = prop.node.moduleSpecifier.text;
+    // const namedImports = prop.get('ImportClause').get('NamedImports');
+    // const namespaceImport = prop.get('ImportClause').get('NamespaceImport');
+
+    // if (namespaceImport.node) {
+    //   const alias = namespaceImport.node.name.escapedText;
+    //   imports.push({name: '*', alias, moduleName});
+    // } else if (namedImports.node) {
+    //   namedImports.node.elements.forEach(node => {
+    //     const name = node.name.escapedText;
+    //     //imports.push({name, alias: name, moduleName});
+    //     
+    //   })
+    // }
+    imports.push(prop.nodeText);
+  });
+
+
+
+  return imports;
 }
 
 function getProviderMocks(ctorMockData) {
@@ -490,10 +511,13 @@ function getImportArray(){
   if(toaster){
     importArray.push('ToastrModule.forRoot()')
   }
+  this.imports.forEach(pipe => {
+    importArray.push(pipe.name);
+  });
   return importArray;
 }
 
-function getPipeArray(){
+function getPipeArray() {  
   const pipeArray = [];
   const pipes = this.imports.filter(el => el.name.includes('Pipe'));
   pipes.forEach(pipe => {

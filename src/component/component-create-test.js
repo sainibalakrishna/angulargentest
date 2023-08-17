@@ -1,11 +1,5 @@
-// const path = require('path');
-// const fs = require('fs');
-
 import * as path from 'path';
-import * as fs from 'fs';
-
-//const CommonTestGen = require('../generic-create-test.js');
-
+import fs from 'fs';
 import CommonTestGen from '../generic-create-test.js';
 
 class ComponentTestGen {
